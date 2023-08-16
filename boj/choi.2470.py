@@ -36,19 +36,12 @@ class VPredicate:
             ge = -v - liquid  # greater than or equal
             le = v - liquid  # less than or equal
 
-            i1 = first_true(
-                i + 1, len(self.liquids), lambda idx: ge <= self.liquids[idx]
+            idx = first_true(
+                i + 1, len(self.liquids), lambda idx: abs(liquid + liquids[idx]) <= v
             )
-            i2 = (
-                first_true(
-                    i + 1,
-                    len(self.liquids),
-                    # not을 붙이는 이유는 x <= ne를 만족하는 **마지막**을 찾기 위해서 first_false로 바꾸어야 했기 때문
-                    lambda idx: not (self.liquids[idx] <= le),
-                )
-                - 1  # first false 자리 -1은 last true
-            )
-            if i1 <= i2:
+
+            if idx < len(self.liquids):
+                self.possible_combination = (liquid, self.liquids[idx])
                 return True
 
         return False
@@ -60,11 +53,5 @@ liquids = sorted([int(x) for x in stdin.readline().split()])
 vpredicate = VPredicate(liquids)
 optimal_v = first_true(1, DIFFMAX, vpredicate.predicate)
 
-# find right pair which satisfies difference of `optimal_v`
-for i, liquid in enumerate(liquids):
-    idx = first_true(
-        i + 1, len(liquids), lambda idx: abs(liquid + liquids[idx]) <= optimal_v
-    )
-    if idx < len(liquids):
-        print(liquid, liquids[idx])
-        break
+if vpredicate.possible_combination:
+    print(" ".join([str(x) for x in vpredicate.possible_combination]))
