@@ -53,4 +53,4 @@ for i in range(len(point_ls) - 1):
 
 mypredicate = MyPredicate(derivations, c)
 
-print(first_false(1, max(point_ls) - min(point_ls), mypredicate.predicate) - 1)
+print(first_false(1, max(point_ls) - min(point_ls) + 1, mypredicate.predicate) - 1)
