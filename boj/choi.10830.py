@@ -23,6 +23,7 @@ def mult(a: Matrix, b: Matrix, n: int):
 
 def r_sol(exp: int, a: Matrix, mod: int) -> Matrix:
     if exp == 1:
+        modulo(a, mod)
         return a
     if exp % 2 == 0:
         interm = r_sol(exp // 2, a, mod)
