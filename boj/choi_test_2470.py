@@ -30,3 +30,39 @@ class Test(unittest.TestCase):
         liquids = [-100, -90, 0, 90, 130, 130, 130, 130, 130]
         answer = (-90, 90)
         self.assertEqual(answer, choi.solve(liquids))
+
+    def test5(self):
+        liquids = [500, 501]
+        answer = (500, 501)
+        self.assertEqual(answer, choi.solve(liquids))
+
+    def test6(self):
+        liquids = [-999, 1, 2]
+        answer = (1, 2)
+        self.assertEqual(answer, choi.solve(liquids))
+
+    def test7(self):
+        liquids = [-1000000000, -999999999, 333333333, 333333334]
+        answer = (-999999999, 333333334)
+        self.assertEqual(answer, choi.solve(liquids))
+
+    def test8(self):
+        liquids = [-1000000000, -999999999, 1]
+        answer = (-999999999, 1)
+        self.assertEqual(answer, choi.solve(liquids))
+
+    def test9(self):
+        liquids = [1000000000, 999999999]
+        answer = (999999999, 1000000000)
+        self.assertEqual(answer, choi.solve(liquids))
+
+    def test_timeout1(self):
+        n = 100000
+        liquids = [i - 100000000 for i in range(n // 2)]
+        liquids += [i + 200000000 for i in range(n // 2)]
+        choi.solve(liquids)
+
+    def test_timeout2(self):
+        n = 100000
+        liquids = [1e9 - i for i in range(n)]
+        choi.solve(liquids)
