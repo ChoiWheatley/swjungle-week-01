@@ -15,6 +15,7 @@ DIFFMAX = 2000000000
 
 
 def first_true(lo: int, hi: int, pred: Callable[[int], bool]) -> int:
+    """F F F F T T T T"""
     while lo != hi:
         mid = lo + (hi - lo) // 2
         if pred(mid):
@@ -24,34 +25,60 @@ def first_true(lo: int, hi: int, pred: Callable[[int], bool]) -> int:
     return lo
 
 
+def first_false(lo: int, hi: int, pred: Callable[[int], bool]) -> int:
+    """T T T T F F F"""
+    return first_true(lo, hi, lambda idx: not pred(idx))
+
+
 @dataclass
 class VPredicate:
     liquids: List[int]  # 정렬이 되어있는 용액 리스트
-    possible_combination: Tuple[int, int] | None = None
+    comb: Tuple[int, int] | None = None
 
     def predicate(self, v: int) -> bool:
-        """두 용액을 섞어 그 특성값을 abs(v) 이하로 만들 수 있는가?"""
+        """두 용액을 섞어 그 특성값의 절댓값을 v 이하로 만들 수 있는가?"""
         for i, liquid in enumerate(self.liquids):
-            # ge <= liquid + x <= le 를 만족하는 x가 liquids 안에 있는가?
-            ge = -v - liquid  # greater than or equal
-            le = v - liquid  # less than or equal
-
-            idx = first_true(
-                i + 1, len(self.liquids), lambda idx: abs(liquid + liquids[idx]) <= v
+            first_positive = first_true(
+                i + 1, len(self.liquids), lambda idx: liquid + self.liquids[idx] >= 0
             )
 
-            if idx < len(self.liquids):
-                self.possible_combination = (liquid, self.liquids[idx])
+            # 음수의 영역
+            idx = first_true(
+                i + 1, first_positive, lambda idx: abs(liquid + self.liquids[idx]) <= v
+            )
+            if idx < first_positive:
+                self.comb = (liquid, self.liquids[idx])
+                return True
+
+            # 양수의 영역
+            idx = (
+                first_false(
+                    first_positive,
+                    len(self.liquids),
+                    lambda idx: abs(liquid + self.liquids[idx]) <= v,
+                )
+                - 1
+            )
+            if idx >= first_positive:
+                self.comb = (liquid, self.liquids[idx])
                 return True
 
         return False
 
 
-n = int(input())
-liquids = sorted([int(x) for x in stdin.readline().split()])
+def solve(liquids: List[int]):
+    liquids.sort()
 
-vpredicate = VPredicate(liquids)
-optimal_v = first_true(1, DIFFMAX, vpredicate.predicate)
+    vpredicate = VPredicate(liquids)
+    optimal_v = first_true(0, DIFFMAX, vpredicate.predicate)
 
-if vpredicate.possible_combination:
-    print(" ".join([str(x) for x in vpredicate.possible_combination]))
+    if vpredicate.comb:
+        return vpredicate.comb
+
+
+if __name__ == "__main__":
+    n = int(input())
+    liquids = [int(x) for x in stdin.readline().split()]
+    result = solve(liquids)
+    if result is not None:
+        print([str(x) for x in result])
