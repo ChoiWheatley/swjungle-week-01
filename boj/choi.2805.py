@@ -23,6 +23,8 @@ def first_true(lo: int, hi: int, pred: Callable[[int], bool]):
 n, m = [int(x) for x in input().split()]
 tree_ls = [int(x.strip()) for x in stdin.readline().split()]
 
+# last false, not first true
 print(
-    first_true(1, MAXH, lambda h: sum([max(0, tree_h - h) for tree_h in tree_ls]) <= m)
+    first_true(1, MAXH, lambda h: sum([max(0, tree_h - h) for tree_h in tree_ls]) < m)
+    - 1
 )
